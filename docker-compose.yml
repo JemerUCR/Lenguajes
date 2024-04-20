@@ -1,0 +1,37 @@
+#manejamos todas las maquinas virtuales, configuracion del entorno
+version: '3.9'
+services:
+  db:
+    image: mysql:latest
+    environment:
+      - MYSQL_DATABASE=taller
+      - MYSQL_ROOT_PASSWORD=12345
+    ports: 
+      - 3306:3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./db-dump:/docker-entrypoint-initdb.d
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+  web: 
+    container_name: servidor-web
+    build:
+      context: .
+      dockerfile: ./www/Dockerfile
+    volumes:
+      - ./www/src:/var/www/html/src
+      - ./www/public:/var/www/html/public
+      #- ./www:/var/www/html
+    ports:
+      - 8000:80
+volumes:
+  db-dump:
+  mysql:
+  www:
+        
