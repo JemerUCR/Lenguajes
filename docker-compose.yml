@@ -3,6 +3,7 @@ version: '3.9'
 services:
   db:
     image: mysql:latest
+    container_name: base_datos
     environment:
       - MYSQL_DATABASE=taller
       - MYSQL_ROOT_PASSWORD=12345
@@ -19,7 +20,7 @@ services:
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
-  web: 
+  web-datos:
     container_name: servidor-web
     build:
       context: .
@@ -30,8 +31,20 @@ services:
       #- ./www:/var/www/html
     ports:
       - 8000:80
+  web-negocio:
+    container_name: servidor-negocio
+    build:
+      context: .
+      dockerfile: ./negocio/Dockerfile
+    volumes:
+      - ./negocio/src:/var/www/html/src
+      - ./negocio/public:/var/www/html/public
+      #- ./www:/var/www/html
+    ports:
+      - 9000:80
 volumes:
   db-dump:
   mysql:
   www:
+  negocio:
         

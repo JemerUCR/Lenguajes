@@ -9,9 +9,9 @@ $app->group('/cliente', function(RouteCollectorProxy $cliente){
     $cliente->post('', Cliente::class . ':create');
     //$cliente->get('/{id}', Cliente::class . ':buscar');
     $cliente->get('/read[/{id}]', Cliente::class . ':read');
-    $cliente->get('/filtro', Cliente::class . ':filtrar');
-    $cliente->put('/{id}', Cliente::class . ':update');
-    $cliente->delete('/{id}', Cliente::class . ':delete');
+    //$cliente->get('/filtro', Cliente::class . ':filtrar');
+    //$cliente->put('/{id}', Cliente::class . ':update');
+    //$cliente->delete('/{id}', Cliente::class . ':delete');
 });
 
 
