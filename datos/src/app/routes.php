@@ -9,11 +9,10 @@ $app->group('/cliente', function(RouteCollectorProxy $cliente){
     $cliente->post('', Cliente::class . ':create');
     //$cliente->get('/{id}', Cliente::class . ':buscar');
     $cliente->get('/read[/{id}]', Cliente::class . ':read');
-    //$cliente->get('/filtro', Cliente::class . ':filtrar');
+    $cliente->get('/filtro', Cliente::class . ':filtrar');
     $cliente->put('/{id}', Cliente::class . ':update');
     $cliente->delete('/{id}', Cliente::class . ':delete');
 });
-
 
 //Artefacto
 $app->group('/artefacto', function(RouteCollectorProxy $artefacto){
@@ -25,7 +24,6 @@ $app->group('/artefacto', function(RouteCollectorProxy $artefacto){
     $artefacto->delete('/{id}', Artefacto::class . ':delete');    
 });
 
-//Auth
-$app->group('/auth', function(RouteCollectorProxy $auth){
-    $auth->post('/iniciar', AUTH::class . ':iniciar');
+$app->group('/auth', function (RouteCollectorProxy $auth) {
+    $auth->post('/iniciar', Auth::class . ':iniciar');
 });

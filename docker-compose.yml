@@ -6,12 +6,15 @@ services:
     container_name: base_datos
     environment:
       - MYSQL_DATABASE=taller
-      - MYSQL_ROOT_PASSWORD=12345
+      - MYSQL_ROOT_PASSWORD=db_password
     ports: 
       - 3306:3306
     volumes:
       - ./mysql:/var/lib/mysql
       - ./db-dump:/docker-entrypoint-initdb.d
+    #networks:
+     # dto-red:
+      #  ip4_address: 192.168.10.10/24
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
@@ -20,17 +23,27 @@ services:
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
+    depends_on:
+      - db
+    #networks:
+     # dto-red:
+      #  ip4_address: 192.168.10.11/24
   web-datos:
     container_name: servidor-web
     build:
       context: .
-      dockerfile: ./www/Dockerfile
+      dockerfile: ./datos/Dockerfile
     volumes:
-      - ./www/src:/var/www/html/src
-      - ./www/public:/var/www/html/public
+      - ./datos/src:/var/www/html/src
+      - ./datos/public:/var/www/html/public
       #- ./www:/var/www/html
     ports:
       - 8000:80
+    depends_on:
+      - db
+    #networks:
+     # dto-red:
+      #  ip4_address: 192.168.10.12/24
   web-negocio:
     container_name: servidor-negocio
     build:
@@ -42,9 +55,16 @@ services:
       #- ./www:/var/www/html
     ports:
       - 9000:80
+    depends_on:
+      - web-datos
+    #networks:
+     # dto-red:
+      #  ip4_address: 192.168.10.13/24
+secrets:
+  db_password:
+    file: db_password.txt
 volumes:
   db-dump:
   mysql:
   www:
   negocio:
-        

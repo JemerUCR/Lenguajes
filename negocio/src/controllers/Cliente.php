@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class Cliente {
 
-    private const URL = "http://web-datos";
+    private const URL = "http://web-datos/cliente";
 
     private function ejecutarCURL($url, $metodo, $datos = null) {
         $ch = curl_init();
@@ -20,7 +20,7 @@ class Cliente {
         switch($metodo){
             case 'POST' : 
                 curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $datos);
+                //curl_setopt($ch, CURLOPT_POSTFIELDS, $datos);
                 break;
             
             case 'PUT': 
@@ -38,27 +38,42 @@ class Cliente {
         return ['resp' => $resp, 'status' => $status];
     }
 
-    public function read(Request $request, Response $response, $args) {
-
-        $url = $this::URL . '/cliente/read';
-        //$url = $this::URL . '/cliente';
-
+    public function read(Request $request, Response $response, $args){
+        $url = $this::URL . '/read';
         if(isset($args['id'])){
             $url .= "/{$args['id']}";
         }
-  
-        $respA = $this->ejecutarCURL($url, 'GET');      
-
+        $respA = $this->ejecutarCURL($url, 'GET');
         $response->getBody()->write($respA['resp']);
-        return $response->withHeader('Content-type', 'Application/json')
-        ->withStatus($respA['status']);
+        return $response->withHeader('content-type', 'Application/json')
+            ->withStatus($respA['status']);
     }
 
-    public function create(Request $request, Response $response, $args) {
-        $datos = $request->getBody();
-        $url = $this::URL . '/cliente';
-        $respA = $this->ejecutarCURL($url, 'POST', $datos);
-
+    public function create(Request $request, Response $response, $args){
+        $datos = $request->getbody();
+        $respA = $this->ejecutarCURL($this::URL, 'POST', $datos);
         return $response->withStatus($respA['status']);
+    }
+
+    public function update(Request $request, Response $response, $args){
+        $datos = $request->getbody();
+        $url = $this::URL . "/{$args['id']}";
+        $respA = $this->ejecutarCURL($url, 'PUT', $datos);
+        return $response->withStatus($respA['status']);
+    }
+
+    public function delete(Request $request, Response $response, $args){
+        $url = $this::URL ."/{$args['id']}";
+        $respA = $this->ejecutarCURL($url, 'DELETE');
+        return $response->withStatus($respA['status']);
+    }
+
+    public function filtrar(Request $request, Response $response, $args){
+        $params = $request->getQueryParams();
+        $url = $this::URL . '/filtro?' . http_build_query($params);
+        $respA = $this->ejecutarCURL($url, 'GET');
+        $response->getBody()->write($respA['resp']);
+        return $response->withHeader('Content-type', 'Application/json')
+                ->withStatus($respA['status']);
     }
 }
