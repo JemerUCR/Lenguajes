@@ -1,8 +1,11 @@
 <?php
 namespace App\controllers;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
+
+
 
 // Cliente
 $app->group('/cliente', function(RouteCollectorProxy $cliente){
@@ -13,6 +16,16 @@ $app->group('/cliente', function(RouteCollectorProxy $cliente){
     $cliente->put('/{id}', Cliente::class . ':update');
     $cliente->delete('/{id}', Cliente::class . ':delete');
 });
+
+// Tecnico
+$app->group('/tecnico', function(RouteCollectorProxy $tecnico) {
+    $tecnico->post('', Tecnico::class . ':create');
+    $tecnico->get('/read[/{id}]', Tecnico::class . ':read');
+    $tecnico->get('/filtro', Tecnico::class . ':filtrar');
+    $tecnico->put('/{id}', Tecnico::class . ':update');
+    $tecnico->delete('/{id}', Tecnico::class . ':delete');
+});
+
 
 
 //Artefacto

@@ -2,15 +2,14 @@
 namespace App\controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Container\ContainerInterface;
 use PDO;
 
-class Cliente extends Persona{
+class Oficinista extends Persona{
 
     protected $container;
 
-    const RECURSO = 'cliente';
-    const ROL = 4;
+    const RECURSO = 'oficinista';
+    const ROL = 2;
 
     /*public function __construct(ContainerInterface $c){
         $this->container=$c;
@@ -36,7 +35,6 @@ class Cliente extends Persona{
                 ->withHeader('Content-type', 'Application/json')
                 ->withStatus($resp['status']);
     }
-    
     
     function update  (Request $request, Response $response, $args){
         $body = json_decode($request->getBody());
@@ -93,36 +91,28 @@ class Cliente extends Persona{
     function filtrar(Request $request, Response $response, $args){
         $datos = $request->getQueryParams();
         $sql = "SELECT * FROM cliente WHERE ";
-        
-        // Construir la consulta dinámica
         foreach ($datos as $key => $value) {
             $sql .= "$key LIKE :$key AND ";
         }
         $sql = rtrim($sql, 'AND ') . ';';
-    
+
         $con = $this->container->get('bd');
-        try {
-            $query = $con->prepare($sql);
-            foreach ($datos as $key => $value) {
-                $query->bindValue(":$key", "%$value%");
-            }
-            $query->execute();
-            $res = $query->fetchAll(PDO::FETCH_ASSOC);
-            $status = $query->rowCount() > 0 ? 200 : 204; // 204 No Content si no hay resultados
-        } catch (\PDOException $e) {
-            $status = 500;
-            $res = ['error' => $e->getMessage()];
-            error_log("Error en filtrar: " . $e->getMessage());
+        $query = $con->prepare($sql);
+        foreach ($datos as $key => $value) {
+            //$query->bindValue(":$key","%$value%",PDO::PARAM_STR);
+            $query->bindValue(":$key", "%$value%");
         }
-    
+        $query->execute();
+        $res = $query->fetchAll();
+        $status = $query->rowCount() > 0 ? 200 : 204;
         $query = null;
         $con = null;
-        
         $response->getBody()->write(json_encode($res));
         return $response
             ->withHeader('Content-type', 'Application/json')
             ->withStatus($status);
     }
+
     /*function buscar(Request $request, Response $response, $args) {
         $id = $args['id'];
         

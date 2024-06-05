@@ -1,5 +1,6 @@
 #Jalar la imagen
-FROM php:apache 
+FROM php:apache-buster
+
 
 WORKDIR /var/www/html
 

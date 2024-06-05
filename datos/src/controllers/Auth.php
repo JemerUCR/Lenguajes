@@ -14,10 +14,16 @@ class Auth {
     public function __construct(ContainerInterface $c){
         $this->container = $c;
     }
+
+    private function modificarToken($usuario, $tokenRef) {	
+        $sql = "";
+    }
     
     private function autenticar($usuario, $passw){
         
         $sql = "SELECT * FROM usuario WHERE idUsuario = :idUsuario";
+        $sql = "OR correo = :idUsuario";
+
 
         $con = $this->container->get('bd');
 
@@ -41,7 +47,8 @@ class Auth {
             $query->bindValue(":idUsuario", $datos->idUsuario);
             $query->execute();
 
-            $sql = "SELECT nombre FROM $recurso WHERE id = :id";
+            $sql = "SELECT nombre FROM $recurso WHERE idUsuario = :id";
+            $sql = "OR correo = $usuario";
             $query = $con->prepare($sql);
             $query->bindValue(":id", $datos->idUsuario);
             $query->execute();
@@ -66,16 +73,25 @@ class Auth {
             'rol' => $rol,
             'nom' => $nombre
         ];
-        $token = JWT::encode($payload, $key, 'HS256');
 
-        return $token;
+        $payloadRef = [
+            'iss' => $_SERVER['SERVER_NAME'],
+            'iat' => time(),
+            'rol' => $rol
+        ];
+    
+        return [
+            "token" => JWT::encode($payload, $key, 'HS256'),
+            "tokenRef" => $tokenRef = JWT::encode($payloadRef, $key, 'HS256')
+        ];
     }
-
+    //Completar la autenticacion de forma ideal, osea verificar por cedula
     public function iniciar(Request $request, Response $response, $args){
         $body = json_decode($request->getBody());
 
         if($datos = $this->autenticar($body->usuario, $body->passw)){
             $token = $this->generarToken($body->usuario, $datos['rol'], $datos['nombre']);
+            $this->modificarToken($body->usuario, $token->('tokenRef'));
             $response->getBody()->write(json_encode($token));
             $status = 200;
         }else{
